@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BIL Almaty — Bilim-Innovation Lyceum</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+  /* ─── HERO SLIDESHOW ─── */
+  .hero-slider {
+    position: relative; width: 100%; height: 100vh;
+    min-height: 560px; overflow: hidden;
+    margin-top: 68px; /* offset for fixed navbar */
+  }
+  .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.85s ease; }
+  .slide.active { opacity: 1; z-index: 1; }
+  .slide-photo {
+    position: absolute; inset: 0;
+    background: var(--navy); /* navy until real photo added */
+    background-size: cover; background-position: center;
+    transition: transform 8s ease;
+  }
+  .slide.active .slide-photo { transform: scale(1.04); }
+  /* Dark gradient so text is readable over any photo */
+  .slide-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(11,10,51,0.82) 0%, rgba(11,10,51,0.38) 50%, rgba(11,10,51,0.1) 100%);
+  }
+  .slide-content {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+    max-width: 1180px; margin: 0 auto;
+    padding: 0 32px 96px;
+  }
+  .slide-tag { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .slide-tag::before { content:''; display:block; width:20px; height:1px; background:var(--gold); }
+  .slide-title { font-family: var(--font-display); font-size: clamp(2.2rem,5.5vw,5rem); font-weight: 900; color: #fff; line-height: 1.0; margin-bottom: 14px; max-width: 720px; }
+  .slide-title em { font-style: italic; color: var(--gold); }
+  .slide-desc { font-size: 0.97rem; color: rgba(255,255,255,0.65); max-width: 500px; line-height: 1.8; margin-bottom: 26px; font-weight: 300; }
+  .slide-link { display: inline-flex; align-items: center; gap: 8px; background: var(--gold); color: var(--navy); padding: 11px 24px; border-radius: 7px; font-weight: 700; font-size: 0.82rem; transition: all 0.22s; }
+  .slide-link:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 6px 22px rgba(211,175,54,0.4); }
+
+  /* Progress bar */
+  .s-progress { position: absolute; top: 0; left: 0; height: 3px; background: var(--gold); z-index: 10; width: 0; transition: width 5.5s linear; }
+  .s-progress.run { width: 100%; }
+
+  /* Arrows */
+  .s-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+    width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1); backdrop-filter: blur(8px);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.22s; font-size: 0.9rem;
+  }
+  .s-arrow:hover { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+  .s-prev { left: 28px; } .s-next { right: 28px; }
+
+  /* Dots + counter */
+  .s-dots { position: absolute; bottom: 28px; right: 32px; z-index: 10; display: flex; gap: 7px; align-items: center; }
+  .sdot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.22s; padding: 0; }
+  .sdot.active { background: var(--gold); width: 22px; border-radius: 4px; }
+  .s-counter { position: absolute; bottom: 32px; left: 32px; z-index: 10; font-family: var(--font-mono); font-size: 0.68rem; color: rgba(255,255,255,0.35); letter-spacing: 2px; }
+  .s-counter em { color: var(--gold); font-style: normal; }
+
+  /* ─── NEWS FEED ─── */
+  .news-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+  .news-card { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; transition: all 0.28s; }
+  .news-card:hover { border-color: var(--border-gold); box-shadow: 0 10px 36px rgba(11,10,51,0.08); transform: translateY(-3px); }
+  /* Photo area — shows emoji icon until real photo added */
+  .nc-photo { height: 185px; background: var(--bg-subtle); display: flex; align-items: center; justify-content: center; font-size: 2.8rem; background-size: cover; background-position: center; border-bottom: 1px solid var(--border); }
+  .nc-body { padding: 20px 22px; }
+  .nc-meta { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .nc-date { font-family: var(--font-mono); font-size: 0.64rem; color: var(--text-muted); letter-spacing: 1px; }
+  .nc-body h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--navy); line-height: 1.3; margin-bottom: 8px; }
+  .nc-body p  { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; }
+
+  /* ─── STATS ROW ─── */
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+  .stat-box { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 14px; padding: 28px 20px; text-align: center; transition: all 0.28s; }
+  .stat-box:hover { border-color: var(--border-gold); box-shadow: 0 6px 24px rgba(211,175,54,0.1); transform: translateY(-3px); }
+  .stat-num { font-family: var(--font-display); font-size: 2.8rem; font-weight: 900; color: var(--navy); line-height: 1; display: block; }
+  .stat-lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; display: block; }
+
+  /* ─── QUICK LINKS ─── */
+  .ql-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .ql-card { background: var(--bg-card); padding: 28px 26px; display: flex; flex-direction: column; transition: background 0.2s; position: relative; overflow: hidden; }
+  .ql-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--gold); transform:scaleX(0); transform-origin:left; transition:transform 0.28s ease; }
+  .ql-card:hover { background: var(--bg-subtle); }
+  .ql-card:hover::after { transform: scaleX(1); }
+  .ql-card:hover .ql-arr { transform: translate(3px,-3px); color: var(--gold); }
+  .ql-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .ql-icon { font-size: 1.7rem; }
+  .ql-arr  { font-size: 0.95rem; color: var(--text-muted); transition: all 0.22s; }
+  .ql-card h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .ql-card p  { font-size: 0.8rem; color: var(--text-muted); line-height: 1.55; }
+
+  /* ─── ABOUT STRIP ─── */
+  .about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .about-text p { font-size: 0.95rem; color: var(--text-mid); line-height: 1.85; margin-bottom: 16px; }
+  .about-pills { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
+  .a-pill { background: var(--bg-subtle); border: 1.5px solid var(--border); color: var(--text-mid); padding: 7px 16px; border-radius: 100px; font-size: 0.78rem; font-weight: 500; }
+  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ab-stat { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 12px; padding: 24px 20px; text-align: center; transition: all 0.28s; }
+  .ab-stat:hover { border-color: var(--border-gold); transform: translateY(-3px); }
+  .ab-num { font-family: var(--font-display); font-size: 2.5rem; font-weight: 900; color: var(--navy); line-height: 1; display: block; margin-bottom: 6px; }
+  .ab-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ─── ADMISSIONS BAND ─── */
+  .admit-band { background: var(--navy); padding: 56px 0; }
+  .admit-inner { display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .admit-inner h2 { font-family: var(--font-display); font-size: clamp(1.5rem,3vw,2.2rem); font-weight: 900; color: #fff; }
+  .admit-inner h2 em { font-style:italic; color:var(--gold); }
+  .admit-inner p { color: rgba(255,255,255,0.55); font-size: 0.88rem; margin-top: 6px; }
+
+  /* ─── IG STRIP ─── */
+  .ig-strip { background: var(--bg-subtle); padding: 60px 0; text-align: center; }
+  .ig-strip h2 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
+  .ig-strip h2 em { font-style:italic; color:var(--gold); }
+  .ig-strip p { color: var(--text-muted); font-size: 0.87rem; margin-bottom: 22px; }
+  .ig-btn { display:inline-flex; align-items:center; gap:10px; background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045); color:#fff; padding:13px 32px; border-radius:100px; font-weight:700; font-size:0.88rem; transition:all 0.28s; box-shadow:0 4px 18px rgba(253,29,29,0.2); }
+  .ig-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(253,29,29,0.35); }
+
+  @media(max-width:900px){
+    .news-grid { grid-template-columns:1fr 1fr; }
+    .stats-row { grid-template-columns:1fr 1fr; }
+    .ql-grid { grid-template-columns:1fr 1fr; }
+    .about-inner { grid-template-columns:1fr; gap:40px; }
+  }
+  @media(max-width:600px){
+    .news-grid { grid-template-columns:1fr; }
+    .ql-grid { grid-template-columns:1fr; }
+    .stats-row { grid-template-columns:1fr 1fr; }
+    .admit-inner { flex-direction:column; text-align:center; }
+    .s-arrow { display:none; }
+    .slide-content { padding: 0 18px 80px; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html">
+    <img src="logo.png" alt="BIL Logo" class="nav-logo-img"/>
+    <div class="nav-logo-text">
+      <span class="logo-main">BIL ALMATY</span>
+      <span class="logo-sub">Bilim-Innovation Lyceum</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="admissions.html">Admissions</a></li>
+    <li><a href="activities.html">Activities</a></li>
+    <li><a href="achievements.html">Achievements</a></li>
+    <li><a href="olympiads.html">Olympiads</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="staff.html">Staff</a></li>
+  </ul>
+  <a href="https://bilemtihan.kz" target="_blank" class="nav-cta">Apply Now ↗</a>
+  <button class="hamburger" id="hamburger">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <img src="logo.png" alt="BIL Logo" class="mobile-logo"/>
+  <a href="index.html">Home</a>
+  <a href="news.html">News</a>
+  <a href="admissions.html">Admissions</a>
+  <a href="activities.html">Activities</a>
+  <a href="achievements.html">Achievements</a>
+  <a href="olympiads.html">Olympiads</a>
+  <a href="calendar.html">Calendar</a>
+  <a href="staff.html">Staff</a>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     HERO SLIDESHOW
+     HOW TO ADD PHOTOS: on any .slide-photo div,
+     add:  style="background-image:url('photos/yourfile.jpg');"
+     Recommended size: 1920×1080 or wider.
+     ═══════════════════════════════════════════ -->
+<div class="hero-slider" id="heroSlider">
+  <div class="s-progress" id="sProgress"></div>
+  <div class="s-counter"><em id="sCur">01</em> / <span id="sTotal">05</span></div>
+  <div class="s-dots" id="sDots"></div>
+  <button class="s-arrow s-prev" id="sPrev"><i class="fa fa-chevron-left"></i></button>
+  <button class="s-arrow s-next" id="sNext"><i class="fa fa-chevron-right"></i></button>
+
+  <!-- SLIDE 1: School intro -->
+  <div class="slide active">
+    <!-- PHOTO SLIDE 1: school building / students → style="background-image:url('photos/slide1.jpg');" -->
+    <div class="slide-photo" style='background-image:url("photos/almaty bil building.jpg")'></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="slide-tag">Almaty · Kazakhstan · Est. 1992</div>
+      <h1 class="slide-title">Almaty<br/><em>Bilim-Innovation</em><br/>Lyceum</h1>
+      <p class="slide-desc">A state-funded boys' lyceum delivering trilingual excellence — producing Kazakhstan's top olympiad students, scientists, and future leaders.</p>
+      <a href="admissions.html" class="slide-link">Explore Admissions <i class="fa fa-arrow-right" style="font-size:.72rem"></i></a>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Olympiad achievement -->
+  <div class="slide">
+    <!-- PHOTO SLIDE 2: olympiad ceremony / medal photo → style="background-image:url('photos/slide2.jpg');" -->
+    <div class="slide-photo" style="background-image:url('photos/regional olymp 2026.jpeg');"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="slide-tag">Olympiad Achievement · 2026</div>
+      <!-- PLACEHOLDER: update title if achievement changes -->
+      <h1 class="slide-title">52 Prize Places at the<br/><em>City Olympiad</em> Round</h1>
+      <p class="slide-desc">Our students earned 52 prize-winning places at the Republican Subject Olympiad city round for grades 9–11, January 2026.</p>
+      <a href="olympiads.html" class="slide-link">See All Results <i class="fa fa-arrow-right" style="font-size:.72rem"></i></a>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Robotics -->
+  <div class="slide">
+    <!-- PHOTO SLIDE 3: robotics team → style="background-image:url('photos/slide3.jpg');" -->
+    <div class="slide-photo" style="background-image:url('photos/ftc sana.jpeg');"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="slide-tag">STEM · Robotics</div>
+      <h1 class="slide-title">FTC Robotics<br/><em>Sana Team #24697</em></h1>
+      <p class="slide-desc">Our FIRST Tech Challenge team designs and programs competitive robots, representing BIL at national and international events.</p>
+      <a href="activities.html" class="slide-link">Explore Activities <i class="fa fa-arrow-right" style="font-size:.72rem"></i></a>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: PLACEHOLDER — fill in your own content -->
+  <div class="slide">
+    <!-- PHOTO SLIDE 4: your photo → style="background-image:url('photos/slide4.jpg');" -->
+    <div class="slide-photo" style="background-image:url('photos/lumiere zhans.jpeg');"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="slide-tag">Program Acceptance</div>
+      <!-- PLACEHOLDER: replace with your headline and description -->
+      <h1 class="slide-title">Lumiere Education<br/>Research <em>Institute</em></h1>
+      <p class="slide-desc">Our student Baqyt Zhansultan has been accepted into the Lumiere Education Research Institute for their outstanding academic achievements.</p>
+      <a href="achievements.html" class="slide-link">Your Link <i class="fa fa-arrow-right" style="font-size:.72rem"></i></a>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: PLACEHOLDER -->
+  <div class="slide">
+    <!-- PHOTO SLIDE 5: your photo → style="background-image:url('photos/slide5.jpg');" -->
+    <div class="slide-photo" style="background-image:url('photos/rsi acceptance.jpeg');"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="slide-tag">Program Acceptance</div>
+      <!-- PLACEHOLDER: replace with your headline and description -->
+      <h1 class="slide-title">Research Science Institute<br/>at <em>MIT</em></h1>
+      <p class="slide-desc">RSI is an elite program that only selects 100 students worldwide. We are happy to announce that there are only 2 students accepted to RSI in Kazakhstan this year — and both are from our lyceum! </p>
+      <a href="achievements.html" class="slide-link">Your Link <i class="fa fa-arrow-right" style="font-size:.72rem"></i></a>
+    </div>
+  </div>
+</div>
+
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <!-- PLACEHOLDER: update these with your latest announcements -->
+    <span>🥇 52 Prizes — City Olympiad Round 2025</span><span class="tick-sep">·</span>
+    <span>🤖 FTC Robotics Team #24697</span><span class="tick-sep">·</span>
+    <span>🧪 IZhO Gold & Bronze Medals - Physics</span><span class="tick-sep">·</span>
+    <span>📚 Lumiere Education Acceptance</span><span class="tick-sep">·</span>
+    <span>📋 Entry Exam — Register at bilemtihan.kz</span><span class="tick-sep">·</span>
+    <span>🥇 52 Prizes — City Olympiad Round 2025</span><span class="tick-sep">·</span>
+    <span>🤖 FTC Robotics Team #24697</span><span class="tick-sep">·</span>
+    <span>🧪 IZhO Gold & Bronze Medals - Physics</span><span class="tick-sep">·</span>
+    <span>📚 Lumiere Education Acceptance</span><span class="tick-sep">·</span>
+    <span>📋 Entry Exam — Register at bilemtihan.kz</span><span class="tick-sep">·</span>
+  </div>
+</div>
+
+
+<!-- STATS ROW -->
+<section class="section-sm" style="background:var(--bg);">
+  <div class="container">
+    <div class="stats-row">
+      <!-- PLACEHOLDER: update numbers with real figures -->
+      <div class="stat-box reveal"><span class="stat-num">52</span><span class="stat-lbl">Olympiad Prizes 2026</span></div>
+      <div class="stat-box reveal"><span class="stat-num">#15</span><span class="stat-lbl">Olympiad School in KZ</span></div>
+      <div class="stat-box reveal"><span class="stat-num">3</span><span class="stat-lbl">Languages of Instruction</span></div>
+      <div class="stat-box reveal"><span class="stat-num">30+</span><span class="stat-lbl">Years of Excellence</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- NEWS FEED -->
+<section class="section" style="background:var(--bg-subtle);">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px;">
+      <div>
+        <span class="overline">Latest</span>
+        <h2 class="section-title">News &amp; <em>Highlights</em></h2>
+      </div>
+      <a href="news.html" style="font-size:.82rem;font-weight:600;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">View all →</a>
+    </div>
+    <div class="news-grid">
+
+      <!--
+      ════════════════════════════════════════════
+      HOW TO ADD A NEWS CARD:
+        1. Copy the block between BEGIN / END below
+        2. Paste it at the TOP of this .news-grid (newest first)
+        3. Fill in: tag class, date, title, description
+        4. To add a photo: on .nc-photo add
+           style="background-image:url('photos/newsX.jpg');"
+           and remove the emoji inside it
+      ════════════════════════════════════════════
+      -->
+
+      <!-- BEGIN NEWS CARD -->
+      <div class="news-card reveal">
+        <div class="nc-photo">🥇</div><!-- PHOTO: replace emoji + add background-image -->
+        <div class="nc-body">
+          <div class="nc-meta">
+            <span class="tag tag-gold">Olympiads</span><!-- TAG options: tag-gold tag-navy tag-steel tag-sand tag-green -->
+            <span class="nc-date">JAN 2026</span><!-- DATE -->
+          </div>
+          <h3>52 Prizes at City Olympiad Round 2026</h3><!-- TITLE -->
+          <p>Students earned 52 prize-winning places at the Republican Subject Olympiad city round for grades 9–11, held January 6–8, 2026.</p><!-- DESCRIPTION -->
+        </div>
+      </div>
+      <!-- END NEWS CARD -->
+
+      <!-- BEGIN NEWS CARD -->
+      <div class="news-card reveal">
+        <div class="nc-photo">🤖</div>
+        <div class="nc-body">
+          <div class="nc-meta"><span class="tag tag-steel">Robotics</span><span class="nc-date">DEC 2025</span></div>
+          <h3>FTC Robotics Team gets 2nd Place</h3>
+          <p>BIL Almaty Robotics Team #24697 Sana won Inspire Award 2nd Place in the Central Asian stage and progresses into the world satge in Houston.</p>
+        </div>
+      </div>
+      <!-- END NEWS CARD -->
+
+      <!-- BEGIN NEWS CARD -->
+      <div class="news-card reveal">
+        <div class="nc-photo">📋</div>
+        <div class="nc-body">
+          <div class="nc-meta"><span class="tag tag-navy">Admissions</span><span class="nc-date">MAR 2026</span></div>
+          <h3>Entry Exam Registration Now Open</h3>
+          <p>Applications for 2026–2027 are open. The exam day is May 17. Register at bilemtihan.kz.</p>
+        </div>
+      </div>
+      <!-- END NEWS CARD -->
+
+      <!-- BEGIN NEWS CARD — PLACEHOLDER -->
+      <div class="news-card reveal">
+        <div class="nc-photo">📰</div><!-- PHOTO placeholder -->
+        <div class="nc-body">
+          <div class="nc-meta">
+            <span class="tag tag-sand">Achievements</span><!-- change tag -->
+            <span class="nc-date">MAR 2026</span><!-- change date -->
+          </div>
+          <h3>Volleyball 1st Place</h3><!-- change title -->
+          <p>BIL Almaty's volleyball team secured first place in the brawl of XKK Schools</p><!-- change description -->
+        </div>
+      </div>
+      <!-- END NEWS CARD -->
+
+      <!-- BEGIN NEWS CARD — PLACEHOLDER -->
+      <div class="news-card reveal">
+        <div class="nc-photo">📰</div>
+        <div class="nc-body">
+          <div class="nc-meta"><span class="tag tag-sand">YOUR CATEGORY</span><span class="nc-date">MON YYYY</span></div>
+          <h3>Your News Headline Here</h3>
+          <p>Write a 2–3 sentence summary of this news item here.</p>
+        </div>
+      </div>
+      <!-- END NEWS CARD -->
+
+      <!-- BEGIN NEWS CARD — PLACEHOLDER -->
+      <div class="news-card reveal">
+        <div class="nc-photo">📰</div>
+        <div class="nc-body">
+          <div class="nc-meta"><span class="tag tag-sand">YOUR CATEGORY</span><span class="nc-date">MON YYYY</span></div>
+          <h3>Your News Headline Here</h3>
+          <p>Write a 2–3 sentence summary of this news item here.</p>
+        </div>
+      </div>
+      <!-- END NEWS CARD -->
+
+    </div>
+  </div>
+</section>
+
+
+<!-- QUICK LINKS -->
+<section class="section" style="background:var(--bg);">
+  <div class="container">
+    <span class="overline" style="text-align:center;display:block;">Explore</span>
+    <h2 class="section-title" style="text-align:center;margin-bottom:36px;">Everything at <em>BIL Almaty</em></h2>
+    <div class="ql-grid">
+      <a href="news.html"         class="ql-card reveal"><div class="ql-top"><span class="ql-icon">📰</span><span class="ql-arr">↗</span></div><h3>News</h3><p>Announcements, events, school updates</p></a>
+      <a href="admissions.html"   class="ql-card reveal"><div class="ql-top"><span class="ql-icon">📋</span><span class="ql-arr">↗</span></div><h3>Admissions</h3><p>Entry exam, requirements, bilemtihan.kz</p></a>
+      <a href="achievements.html" class="ql-card reveal"><div class="ql-top"><span class="ql-icon">🏆</span><span class="ql-arr">↗</span></div><h3>Achievements</h3><p>Awards, medals, student milestones</p></a>
+      <a href="olympiads.html"    class="ql-card reveal"><div class="ql-top"><span class="ql-icon">🥇</span><span class="ql-arr">↗</span></div><h3>Olympiad Results</h3><p>Full results across all subjects and years</p></a>
+      <a href="activities.html"   class="ql-card reveal"><div class="ql-top"><span class="ql-icon">⚽</span><span class="ql-arr">↗</span></div><h3>Activities</h3><p>Sports, robotics, clubs, science fairs</p></a>
+      <a href="calendar.html"     class="ql-card reveal"><div class="ql-top"><span class="ql-icon">📅</span><span class="ql-arr">↗</span></div><h3>School Calendar</h3><p>Academic calendar and upcoming events</p></a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ABOUT -->
+<section class="section" style="background:var(--bg-subtle);">
+  <div class="container">
+    <div class="about-inner">
+      <div class="about-text reveal">
+        <span class="overline">Who We Are</span>
+        <h2 class="section-title">Built on <em>Excellence</em><br/>Since 1992</h2>
+        <!-- PLACEHOLDER: replace these paragraphs with your school's real description -->
+        <p>Almaty Bilim-Innovation Lyceum is a state-funded boys' lyceum under the Bilim-Innovation Foundation — one of Kazakhstan's most respected educational institutions, founded to produce the country's future scientists, engineers, and leaders.</p>
+        <p>We offer trilingual instruction across Kazakh, Russian, and English for grades 7–11, with an on-campus dormitory open to students from all regions of Kazakhstan.</p>
+        <div class="about-pills">
+          <span class="a-pill">🇰🇿 State-Funded</span>
+          <span class="a-pill">🌐 Trilingual</span>
+          <span class="a-pill">🏠 Dormitory</span>
+          <span class="a-pill">🎓 Grades 7–11</span>
+          <!-- PLACEHOLDER: add more pills as needed -->
+        </div>
+      </div>
+      <div class="about-stats">
+        <!-- PLACEHOLDER: update numbers with real figures -->
+        <div class="ab-stat reveal"><span class="ab-num">46</span><span class="ab-lbl">City Olympiad Prizes 2025</span></div>
+        <div class="ab-stat reveal"><span class="ab-num">#1</span><span class="ab-lbl">Olympiad School in KZ</span></div>
+        <div class="ab-stat reveal"><span class="ab-num">3</span><span class="ab-lbl">Languages of Instruction</span></div>
+        <div class="ab-stat reveal"><span class="ab-num">30+</span><span class="ab-lbl">Years of Excellence</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ADMISSIONS BAND -->
+<div class="admit-band">
+  <div class="container">
+    <div class="admit-inner">
+      <div>
+        <h2>Ready to Join <em>BIL Almaty?</em></h2>
+        <!-- PLACEHOLDER: update exam date if it changes -->
+        <p>All applications via bilemtihan.kz · Phase 1 entry exam: April 30</p>
+      </div>
+      <a href="https://bilemtihan.kz" target="_blank" class="btn btn-gold">
+        <i class="fa fa-external-link-alt" style="font-size:.72rem"></i> Apply at bilemtihan.kz
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<!-- INSTAGRAM -->
+<div class="ig-strip">
+  <div class="container">
+    <h2>Follow Our <em>Story</em></h2>
+    <p>Live updates from students, competitions, and school life every day</p>
+    <a href="https://www.instagram.com/bil.almaty/" target="_blank" class="ig-btn">
+      <i class="fab fa-instagram"></i> @bil.almaty
+    </a>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="logo.png" alt="BIL Logo" class="footer-logo-img"/>
+        <p>Almaty Bilim-Innovation Lyceum<br/>Сапалы білім · Саналы тәрбие</p>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/bil.almaty/" target="_blank" class="fsocial"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/77066306943" target="_blank" class="fsocial"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:bil-mektep@almatybilim.kz" class="fsocial"><i class="fa fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-nav">
+        <h4>Pages</h4>
+        <a href="news.html">News</a>
+        <a href="admissions.html">Admissions</a>
+        <a href="activities.html">Activities</a>
+        <a href="achievements.html">Achievements</a>
+        <a href="olympiads.html">Olympiads</a>
+        <a href="calendar.html">Calendar</a>
+        <a href="staff.html">Staff</a>
+      </div>
+      <div class="footer-info">
+        <h4>Contact</h4>
+        <!-- PLACEHOLDER: add full street address -->
+        <div class="fi-row"><i class="fa fa-map-marker-alt"></i><span>Almaty, Kazakhstan</span></div>
+        <div class="fi-row"><i class="fa fa-phone"></i><span>+7 727 230 69 43</span></div>
+        <div class="fi-row"><i class="fab fa-whatsapp"></i><span>+7 706 630 69 43</span></div>
+        <div class="fi-row"><i class="fa fa-envelope"></i><span>bil-mektep@almatybilim.kz</span></div>
+        <div class="fi-row"><i class="fab fa-instagram"></i><a href="https://instagram.com/bil.almaty" target="_blank">@bil.almaty</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Almaty Bilim-Innovation Lyceum. All rights reserved.</span>
+      <span>Designed for excellence.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Slider ── */
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots   = document.getElementById('sDots');
+  const prog   = document.getElementById('sProgress');
+  const cur    = document.getElementById('sCur');
+  document.getElementById('sTotal').textContent = String(slides.length).padStart(2,'0');
+  let idx = 0, timer;
+  slides.forEach((_,i)=>{
+    const d = document.createElement('button');
+    d.className = 'sdot'+(i===0?' active':'');
+    d.onclick = ()=>go(i);
+    dots.appendChild(d);
+  });
+  function go(n){
+    slides[idx].classList.remove('active');
+    dots.children[idx].classList.remove('active');
+    idx = (n+slides.length)%slides.length;
+    slides[idx].classList.add('active');
+    dots.children[idx].classList.add('active');
+    cur.textContent = String(idx+1).padStart(2,'0');
+    prog.classList.remove('run');
+    prog.style.transition='none'; prog.style.width='0%';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      prog.style.transition='width 5.5s linear';
+      prog.classList.add('run');
+    }));
+    clearInterval(timer); timer=setInterval(()=>go(idx+1),5500);
+  }
+  document.getElementById('sPrev').onclick=()=>go(idx-1);
+  document.getElementById('sNext').onclick=()=>go(idx+1);
+  // swipe
+  let tx=0;
+  const sl=document.getElementById('heroSlider');
+  sl.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  sl.addEventListener('touchend',e=>{if(Math.abs(tx-e.changedTouches[0].clientX)>50)go(tx>e.changedTouches[0].clientX?idx+1:idx-1);},{passive:true});
+  go(0);
+})();
+/* ── Navbar ── */
+const nav=document.getElementById('navbar');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>20),{passive:true});
+/* ── Mobile ── */
+document.getElementById('hamburger').onclick=()=>document.getElementById('mobileMenu').classList.add('open');
+document.getElementById('mobileClose').onclick=()=>document.getElementById('mobileMenu').classList.remove('open');
+document.querySelectorAll('.mobile-menu a').forEach(a=>a.onclick=()=>document.getElementById('mobileMenu').classList.remove('open'));
+/* ── Reveal ── */
+new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08})
+  .observe||(()=>{})();
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+</script>
+</body>
+</html>

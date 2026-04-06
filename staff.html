@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff — BIL Almaty</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+
+  /* ── Department heading ── */
+  .dept-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+  }
+  .dept-heading .dept-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .dept-icon-stem { background: #e8f0f7; }
+  .dept-icon-hum  { background: var(--gold-pale); }
+  .dept-icon-lead { background: var(--bg-subtle); }
+  .dept-heading h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--navy);
+  }
+  .dept-heading p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ── Staff grid ── */
+  .staff-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 64px;
+  }
+
+  /* ── Staff card ── */
+  .staff-card {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.28s;
+  }
+  .staff-card:hover {
+    border-color: var(--border-gold);
+    box-shadow: 0 10px 36px rgba(11,10,51,0.08);
+    transform: translateY(-3px);
+  }
+
+  /*
+  ══════════════════════════════════════════
+  PHOTO AREA
+  HOW TO ADD A REAL PHOTO:
+    1. Save the image in your photos/ folder
+    2. On the .staff-photo div, add:
+       style="background-image:url('photos/name.jpg');"
+    3. Remove the <i> icon inside once you have a photo
+
+  Recommended photo size: 400×400px (square)
+  ══════════════════════════════════════════
+  */
+  .staff-photo {
+    height: 180px;
+    background: var(--bg-subtle);
+    background-size: cover;
+    background-position: center top;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 3rem;
+    color: var(--text-muted);
+  }
+
+  .staff-body { padding: 18px 18px 20px; }
+
+  .staff-subject {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .staff-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .staff-role {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  @media(max-width:1000px){ .staff-grid { grid-template-columns: repeat(3,1fr); } }
+  @media(max-width:700px) { .staff-grid { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:440px) { .staff-grid { grid-template-columns: 1fr 1fr; } }
+
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html">
+    <img src="logo.png" alt="BIL Logo" class="nav-logo-img"/>
+    <div class="nav-logo-text">
+      <span class="logo-main">BIL ALMATY</span>
+      <span class="logo-sub">Bilim-Innovation Lyceum</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="admissions.html">Admissions</a></li>
+    <li><a href="activities.html">Activities</a></li>
+    <li><a href="achievements.html">Achievements</a></li>
+    <li><a href="olympiads.html">Olympiads</a></li>
+    <li><a href="calendar.html">Calendar</a></li>
+    <li><a href="staff.html" class="active">Staff</a></li>
+  </ul>
+  <a href="https://bilemtihan.kz" target="_blank" class="nav-cta">Apply Now ↗</a>
+  <button class="hamburger" id="hamburger">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <img src="logo.png" alt="BIL Logo" class="mobile-logo"/>
+  <a href="index.html">Home</a>
+  <a href="news.html">News</a>
+  <a href="admissions.html">Admissions</a>
+  <a href="activities.html">Activities</a>
+  <a href="achievements.html">Achievements</a>
+  <a href="olympiads.html">Olympiads</a>
+  <a href="calendar.html">Calendar</a>
+  <a href="staff.html">Staff</a>
+</div>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span>/</span><span>Staff</span>
+    </div>
+    <div class="page-hero-label">OUR TEAM</div>
+    <h1 class="page-hero-title">Meet Our <em>Staff</em></h1>
+    <p class="page-hero-sub">Dedicated, highly qualified teachers committed to bringing out the best in every student.</p>
+  </div>
+</section>
+
+
+<section class="section" style="background:var(--bg);">
+  <div class="container">
+
+    <!--
+    ══════════════════════════════════════════════════
+    HOW TO ADD A STAFF MEMBER:
+      1. Copy a staff-card block (between BEGIN / END)
+      2. Paste it inside the correct department's .staff-grid
+      3. Fill in:  staff-subject → subject they teach
+                   staff-name   → their full name
+                   staff-role   → short description / grades
+      4. For a photo: see the PHOTO AREA comment above
+
+    HOW TO ADD A NEW SUBJECT GROUP:
+      Copy an entire dept-heading + staff-grid block,
+      paste it below the others, and rename everything.
+    ══════════════════════════════════════════════════
+    -->
+
+
+    <!-- ══════════════════════════
+         LEADERSHIP
+         ══════════════════════════ -->
+    <div class="dept-heading">
+      <div class="dept-icon dept-icon-lead">🏛️</div>
+      <div>
+        <h2>Leadership</h2>
+        <p>School administration and management</p>
+      </div>
+    </div>
+
+    <div class="staff-grid">
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <!-- PHOTO: style="background-image:url('photos/director.jpg');" -->
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Director</span>
+          <!-- PLACEHOLDER: replace with real name -->
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">School Director · overall administration and leadership of BIL Almaty</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Deputy Director</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Academic affairs · curriculum oversight · grades 5–11</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+    </div>
+
+
+    <!-- ══════════════════════════
+         STEM
+         ══════════════════════════ -->
+    <div class="dept-heading">
+      <div class="dept-icon dept-icon-stem">🔬</div>
+      <div>
+        <h2>STEM</h2>
+        <p>Science, Technology, Engineering & Mathematics</p>
+      </div>
+    </div>
+
+    <div class="staff-grid">
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <!-- PHOTO: style="background-image:url('photos/physics-teacher.jpg');" -->
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Physics</span>
+          <!-- PLACEHOLDER: replace name and role -->
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Physics · grades 7–11 · olympiad preparation</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Mathematics</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Mathematics · grades 5–11 · IMO pathway coaching</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Chemistry</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Chemistry · grades 8–11 · IMChO preparation</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Biology</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Biology · grades 6–11</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Computer Science</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Informatics · grades 7–11 · robotics &amp; programming</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD — PLACEHOLDER (add more STEM teachers here) -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Your Subject</span><!-- PLACEHOLDER -->
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Short description of what they teach and what grades</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+    </div>
+
+
+    <!-- ══════════════════════════
+         HUMANITIES
+         ══════════════════════════ -->
+    <div class="dept-heading">
+      <div class="dept-icon dept-icon-hum">📚</div>
+      <div>
+        <h2>Humanities</h2>
+        <p>Languages, history, social sciences and arts</p>
+      </div>
+    </div>
+
+    <div class="staff-grid">
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <!-- PHOTO: style="background-image:url('photos/kazakh-teacher.jpg');" -->
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Kazakh Language</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Kazakh Language &amp; Literature · grades 5–11</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Russian Language</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Russian Language &amp; Literature · grades 5–11</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">English</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">English Language · grades 5–11 · IELTS preparation</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">History</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">History of Kazakhstan &amp; World History · grades 6–11</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Geography</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Geography · grades 6–10</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD — PLACEHOLDER -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Your Subject</span><!-- PLACEHOLDER -->
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Short description of what they teach and what grades</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+    </div>
+
+
+    <!-- ══════════════════════════
+         PHYSICAL EDUCATION & ARTS
+         ══════════════════════════ -->
+    <div class="dept-heading">
+      <div class="dept-icon dept-icon-lead">🎨</div>
+      <div>
+        <h2>Physical Education &amp; Arts</h2>
+        <p>Sports, music and creative arts</p>
+      </div>
+    </div>
+
+    <div class="staff-grid">
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Physical Education</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">PE · sports coaching · football &amp; basketball teams</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Music</span>
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Music &amp; Dombyra circle · cultural performance</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+      <!-- BEGIN STAFF CARD — PLACEHOLDER -->
+      <div class="staff-card reveal">
+        <div class="staff-photo"><i class="fa fa-user"></i></div>
+        <div class="staff-body">
+          <span class="staff-subject">Your Subject</span><!-- PLACEHOLDER -->
+          <div class="staff-name">Full Name Here</div>
+          <div class="staff-role">Short description of what they teach and what grades</div>
+        </div>
+      </div>
+      <!-- END STAFF CARD -->
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="logo.png" alt="BIL Logo" class="footer-logo-img"/>
+        <p>Almaty Bilim-Innovation Lyceum<br/>Сапалы білім · Саналы тәрбие</p>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/bil.almaty/" target="_blank" class="fsocial"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/77066306943" target="_blank" class="fsocial"><i class="fab fa-whatsapp"></i></a>
+          <a href="mailto:bil-mektep@almatybilim.kz" class="fsocial"><i class="fa fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-nav">
+        <h4>Pages</h4>
+        <a href="news.html">News</a>
+        <a href="admissions.html">Admissions</a>
+        <a href="activities.html">Activities</a>
+        <a href="achievements.html">Achievements</a>
+        <a href="olympiads.html">Olympiads</a>
+        <a href="calendar.html">Calendar</a>
+        <a href="staff.html">Staff</a>
+      </div>
+      <div class="footer-info">
+        <h4>Contact</h4>
+        <div class="fi-row"><i class="fa fa-map-marker-alt"></i><span>Almaty, Kazakhstan</span></div>
+        <div class="fi-row"><i class="fa fa-phone"></i><span>+7 727 230 69 43</span></div>
+        <div class="fi-row"><i class="fab fa-whatsapp"></i><span>+7 706 630 69 43</span></div>
+        <div class="fi-row"><i class="fa fa-envelope"></i><span>bil-mektep@almatybilim.kz</span></div>
+        <div class="fi-row"><i class="fab fa-instagram"></i><a href="https://instagram.com/bil.almaty" target="_blank">@bil.almaty</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Almaty Bilim-Innovation Lyceum. All rights reserved.</span>
+      <span>Designed for excellence.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 20), {passive:true});
+  document.getElementById('hamburger').onclick = () => document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('mobileClose').onclick = () => document.getElementById('mobileMenu').classList.remove('open');
+  document.querySelectorAll('.mobile-menu a').forEach(a => a.onclick = () => document.getElementById('mobileMenu').classList.remove('open'));
+  const ro = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.08});
+  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>School Calendar — BIL Almaty</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+  .cal-layout { display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: start; }
+
+  /* ── Calendar widget ── */
+  .cal-widget { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .cal-header h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 900; color: var(--navy); }
+  .cal-nav { background: none; border: 1.5px solid var(--border); color: var(--text-mid); width: 34px; height: 34px; border-radius: 8px; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; font-size: .85rem; }
+  .cal-nav:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .cal-grid { padding: 18px 20px; }
+  .cal-dow { display: grid; grid-template-columns: repeat(7,1fr); text-align: center; margin-bottom: 8px; }
+  .cal-dow span { font-family: var(--font-mono); font-size: .6rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); padding: 4px 0; }
+  .cal-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+  .cal-day {
+    aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 8px; font-size: .82rem; color: var(--text-mid); cursor: default;
+    position: relative; transition: all .18s;
+  }
+  .cal-day.empty { opacity: 0; pointer-events: none; }
+  .cal-day.today { background: var(--navy); color: #fff; font-weight: 700; }
+  .cal-day.has-event { cursor: pointer; }r
+  .cal-day.has-event:hover { background: var(--gold-pale); color: var(--navy); }
+  .cal-day.has-event.today:hover { background: var(--navy-soft); }
+  .cal-day.selected { background: var(--gold-pale); color: var(--navy); font-weight: 700; border: 1.5px solid var(--gold); }
+  /* dot under day numbers with events */
+  .cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); position: absolute; bottom: 4px; }
+  .cal-day.today .cal-dot { background: rgba(255,255,255,0.7); }
+
+  /* ── Event sidebar ── */
+  .event-sidebar { display: flex; flex-direction: column; gap: 12px; }
+  .event-sidebar-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .event-card { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; transition: all .22s; border-left: 4px solid var(--gold); }
+  .event-card:hover { border-color: var(--border-gold); box-shadow: 0 6px 22px rgba(11,10,51,.07); transform: translateX(3px); }
+  .ev-date { font-family: var(--font-mono); font-size: .64rem; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
+  .ev-title { font-family: var(--font-display); font-size: .95rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .ev-desc  { font-size: .8rem; color: var(--text-muted); line-height: 1.6; }
+  .event-card.cat-exam   { border-left-color: #e05252; }
+  .event-card.cat-sport  { border-left-color: #3a8af0; }
+  .event-card.cat-olymp  { border-left-color: var(--gold); }
+  .event-card.cat-school { border-left-color: #4bb87a; }
+  .event-card.cat-admin  { border-left-color: var(--sand); }
+
+  /* ── Legend ── */
+  .cal-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 28px; }
+  .leg-item { display: flex; align-items: center; gap: 7px; font-size: .78rem; color: var(--text-mid); }
+  .leg-dot  { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ── Upcoming list ── */
+  .upcoming-list { display: flex; flex-direction: column; gap: 10px; }
+  .upc-item { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; gap: 18px; align-items: center; transition: all .22s; }
+  .upc-item:hover { border-color: var(--border-gold); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(11,10,51,.07); }
+  .upc-date-box { background: var(--navy); color: #fff; border-radius: 10px; width: 52px; text-align: center; padding: 8px 4px; flex-shrink: 0; }
+  .upc-day  { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; line-height: 1; }
+  .upc-mon  { font-family: var(--font-mono); font-size: .58rem; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.5); margin-top: 2px; }
+  .upc-info strong { display: block; font-size: .88rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .upc-info span   { font-size: .78rem; color: var(--text-muted); }
+
+  @media(max-width:900px){ .cal-layout{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html"><img src="logo.png" alt="BIL Logo" class="nav-logo-img"/><div class="nav-logo-text"><span class="logo-main">BIL ALMATY</span><span class="logo-sub">Bilim-Innovation Lyceum</span></div></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li><li><a href="news.html">News</a></li><li><a href="admissions.html">Admissions</a></li><li><a href="activities.html">Activities</a></li><li><a href="achievements.html">Achievements</a></li><li><a href="olympiads.html">Olympiads</a></li><li><a href="calendar.html" class="active">Calendar</a></li><li><a href="staff.html">Staff</a></li>
+  </ul>
+  <a href="https://bilemtihan.kz" target="_blank" class="nav-cta">Apply Now ↗</a>
+  <button class="hamburger" id="hamburger">&#9776;</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu"><button class="mobile-close" id="mobileClose">✕</button><img src="logo.png" alt="BIL Logo" class="mobile-logo"/><a href="index.html">Home</a><a href="news.html">News</a><a href="admissions.html">Admissions</a><a href="activities.html">Activities</a><a href="achievements.html">Achievements</a><a href="olympiads.html">Olympiads</a><a href="calendar.html">Calendar</a><a href="staff.html">Staff</a></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a><span>/</span><span>Calendar</span></div>
+    <div class="page-hero-label">SCHEDULE</div>
+    <h1 class="page-hero-title">School <em>Calendar</em></h1>
+    <p class="page-hero-sub">Academic dates, exam periods, olympiads, holidays, and school events for the 2024–2025 academic year.</p>
+  </div>
+</section>
+
+<section class="section" style="background:var(--bg);">
+  <div class="container">
+
+    <!-- Legend -->
+    <div class="cal-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#e05252"></div> Exams &amp; Entry Tests</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--gold)"></div> Olympiads</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#4bb87a"></div> School Events</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#3a8af0"></div> Sports</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--sand)"></div> Admin / Holidays</div>
+    </div>
+
+    <div class="cal-layout">
+
+      <!-- ── CALENDAR WIDGET (JS-rendered) ── -->
+      <div>
+        <div class="cal-widget">
+          <div class="cal-header">
+            <button class="cal-nav" id="calPrev"><i class="fa fa-chevron-left"></i></button>
+            <h3 id="calTitle"></h3>
+            <button class="cal-nav" id="calNext"><i class="fa fa-chevron-right"></i></button>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-dow">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div class="cal-days" id="calDays"></div>
+          </div>
+        </div>
+
+
+        <!-- ── EVENT SIDEBAR — selected day or next events ── -->
+      <div>
+        <div class="event-sidebar-title" id="sidebarTitle">Click a date to see events</div>
+        <div class="event-sidebar" id="eventSidebar">
+          <p style="font-size:.85rem;color:var(--text-muted);margin-top:8px;">Select a highlighted date on the calendar to view its events.</p>
+        </div>
+      </div>
+        
+        <!-- Upcoming events full list -->
+        <h3 style="font-family:var(--font-display);font-size:1.15rem;font-weight:900;color:var(--navy);margin:36px 0 18px;">
+          Upcoming Events
+        </h3>
+        <div class="upcoming-list" id="upcomingList"></div>
+      </div>
+
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-top"><div class="footer-brand"><img src="logo.png" alt="BIL Logo" class="footer-logo-img"/><p>Almaty Bilim-Innovation Lyceum<br/>Сапалы білім · Саналы тәрбие</p><div class="footer-socials"><a href="https://www.instagram.com/bil.almaty/" target="_blank" class="fsocial"><i class="fab fa-instagram"></i></a><a href="https://wa.me/77066306943" target="_blank" class="fsocial"><i class="fab fa-whatsapp"></i></a><a href="mailto:bil-mektep@almatybilim.kz" class="fsocial"><i class="fa fa-envelope"></i></a></div></div><div class="footer-nav"><h4>Pages</h4><a href="news.html">News</a><a href="admissions.html">Admissions</a><a href="activities.html">Activities</a><a href="achievements.html">Achievements</a><a href="olympiads.html">Olympiads</a><a href="calendar.html">Calendar</a><a href="staff.html">Staff</a></div><div class="footer-info"><h4>Contact</h4><div class="fi-row"><i class="fa fa-map-marker-alt"></i><span>Almaty, Kazakhstan</span></div><div class="fi-row"><i class="fa fa-phone"></i><span>+7 727 230 69 43</span></div><div class="fi-row"><i class="fab fa-whatsapp"></i><span>+7 706 630 69 43</span></div><div class="fi-row"><i class="fa fa-envelope"></i><span>bil-mektep@almatybilim.kz</span></div><div class="fi-row"><i class="fab fa-instagram"></i><a href="https://instagram.com/bil.almaty" target="_blank">@bil.almaty</a></div></div></div><div class="footer-bottom"><span>© 2025 Almaty Bilim-Innovation Lyceum.</span><span>Designed for excellence.</span></div></div></footer>
+
+<script>
+/*
+  ══════════════════════════════════════════════
+  HOW TO ADD / EDIT CALENDAR EVENTS:
+  Find the EVENTS array below.
+  Each event is an object like:
+  {
+    date: '2025-04-30',   ← YYYY-MM-DD
+    title: 'Entry Exam Phase 1',
+    desc:  'Phase 1 of the entry exam for 2025-2026.',
+    cat:   'exam'         ← exam | olymp | school | sport | admin
+  }
+  Add a new object to the array, save the file.
+  The calendar and upcoming list update automatically.
+  ══════════════════════════════════════════════
+*/
+const EVENTS = [
+  /* ── ADMISSIONS ── */
+  { date:'2026-02-01', title:'Application Period Opens',        desc:'Applications for 2026–2027 academic year open on bilemtihan.kz.',        cat:'admin' },
+  { date:'2026-04-12', title:'Application Period Closes',         desc:'Applications for 2026–2027 academic year close on bilemtihan.kz.',        cat:'admin' },
+  { date:'2026-05-17', title:'Entry Exam Day',            desc:'Written entry exam covering Math and Kazakh Langua', cat:'exam'  },
+  { date:'2026-05-25', title:'Exam Results Published',          desc:'Phase 1 results available on bilemtihan.kz.',                             cat:'admin' },
+
+  /* ── OLYMPIADS ── */
+  { date:'2025-01-06', title:'City Olympiad Round — Day 1',     desc:'Republican Subject Olympiad city round, grades 9–11. Day 1.',             cat:'olymp' },
+  { date:'2025-01-07', title:'City Olympiad Round — Day 2',     desc:'Republican Subject Olympiad city round, grades 9–11. Day 2.',             cat:'olymp' },
+  { date:'2025-01-08', title:'City Olympiad Round — Day 3',     desc:'Republican Subject Olympiad city round, grades 9–11. Day 3.',             cat:'olymp' },
+
+  /* ── SCHOOL EVENTS ── */
+  { date:'2025-03-08', title:"International Women's Day",       desc:"School celebration — no classes.",                                        cat:'admin' },
+  { date:'2026-04-18', title:'Nauryz Celebration',              desc:'Annual Nauryz school celebration with cultural performances.',             cat:'school'},
+
+  /* ── SPORTS ── */
+  { date:'2026-04-12', title:'City Basketball Tournament',      desc:'Inter-school city basketball tournament.',                                cat:'sport' },
+  { date:'2026-04-19', title:'City Football League',            desc:'BIL Almaty football team city league match.',                             cat:'sport' },
+
+  /* ── PLACEHOLDERS — replace with real events ── */
+  { date:'2025-02-20', title:'PLACEHOLDER: Your Event',         desc:'Replace this with a real event. Change the date and details.',            cat:'school'},
+  { date:'2025-03-15', title:'PLACEHOLDER: Your Event',         desc:'Replace this with a real event. Change the date and details.',            cat:'olymp' },
+];
+
+/* ── Calendar rendering ── */
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+let viewYear, viewMonth;
+
+function init(){
+  const now = new Date();
+  viewYear  = now.getFullYear();
+  viewMonth = now.getMonth();
+  render();
+  buildUpcoming();
+}
+
+function eventsOn(y,m,d){
+  const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  return EVENTS.filter(e=>e.date===key);
+}
+
+function render(){
+  document.getElementById('calTitle').textContent = `${MONTHS[viewMonth]} ${viewYear}`;
+  const container = document.getElementById('calDays');
+  container.innerHTML = '';
+  const now   = new Date();
+  const first = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
+  const days  = new Date(viewYear, viewMonth+1, 0).getDate();
+  // Monday-first: shift Sunday(0) to 6
+  const offset = first===0 ? 6 : first-1;
+
+  for(let i=0;i<offset;i++){
+    const el=document.createElement('div'); el.className='cal-day empty'; container.appendChild(el);
+  }
+  for(let d=1;d<=days;d++){
+    const el  = document.createElement('div'); el.className='cal-day';
+    el.textContent = d;
+    const evs = eventsOn(viewYear,viewMonth,d);
+    const isToday = d===now.getDate()&&viewMonth===now.getMonth()&&viewYear===now.getFullYear();
+    if(isToday) el.classList.add('today');
+    if(evs.length){
+      el.classList.add('has-event');
+      const dot=document.createElement('div'); dot.className='cal-dot'; el.appendChild(dot);
+      el.addEventListener('click',()=>showDay(viewYear,viewMonth,d,evs,el));
+    }
+    container.appendChild(el);
+  }
+}
+
+function showDay(y,m,d,evs,dayEl){
+  document.querySelectorAll('.cal-day.selected').forEach(e=>e.classList.remove('selected'));
+  dayEl.classList.add('selected');
+  document.getElementById('sidebarTitle').textContent = `${d} ${MONTHS[m]} ${y}`;
+  const sb = document.getElementById('eventSidebar');
+  sb.innerHTML = '';
+  evs.forEach(ev=>{
+    sb.innerHTML += `
+      <div class="event-card cat-${ev.cat} reveal">
+        <div class="ev-date">${ev.date}</div>
+        <div class="ev-title">${ev.title}</div>
+        <div class="ev-desc">${ev.desc}</div>
+      </div>`;
+  });
+  // re-observe reveals
+  sb.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+}
+
+function buildUpcoming(){
+  const now = new Date(); now.setHours(0,0,0,0);
+  const ul  = document.getElementById('upcomingList');
+  const upcoming = EVENTS
+    .filter(e=>new Date(e.date)>=now)
+    .sort((a,b)=>a.date.localeCompare(b.date))
+    .slice(0,8);
+  upcoming.forEach(ev=>{
+    const dt  = new Date(ev.date+'T00:00:00');
+    const day = dt.getDate();
+    const mon = MONTHS[dt.getMonth()].substring(0,3).toUpperCase();
+    ul.innerHTML += `
+      <div class="upc-item reveal">
+        <div class="upc-date-box"><div class="upc-day">${day}</div><div class="upc-mon">${mon}</div></div>
+        <div class="upc-info">
+          <strong>${ev.title}</strong>
+          <span>${ev.desc}</span>
+          <span style="margin-left:8px;" class="tag tag-${ev.cat==='exam'?'navy':ev.cat==='olymp'?'gold':ev.cat==='sport'?'steel':'sand'}">${ev.cat}</span>
+        </div>
+      </div>`;
+  });
+  ul.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+}
+
+document.getElementById('calPrev').onclick=()=>{ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} render(); };
+document.getElementById('calNext').onclick=()=>{ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} render(); };
+
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.05});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+const nav=document.getElementById('navbar');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>20),{passive:true});
+document.getElementById('hamburger').onclick=()=>document.getElementById('mobileMenu').classList.add('open');
+document.getElementById('mobileClose').onclick=()=>document.getElementById('mobileMenu').classList.remove('open');
+document.querySelectorAll('.mobile-menu a').forEach(a=>a.onclick=()=>document.getElementById('mobileMenu').classList.remove('open'));
+
+init();
+</script>
+</body>
+</html>
